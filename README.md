@@ -16,19 +16,19 @@ Built on the **4-Layer Harness Model**:
 
 | Skill | What it does | For whom |
 |-------|-------------|----------|
-| **`/harness-self-check`** | Interactive diagnostic. Assumes you already have a setup, then probes until the gap reveals itself. Five self-deceptions, one at a time. | Anyone — any industry |
-| **`/harness-audit`** | Automated codebase scan. Detects five self-deceptions by checking files, CI config, and git history. Offers to auto-fix what it finds. | Software developers |
+| **`/harness-self-check`** | Interactive diagnostic. Assumes you already have a setup, then probes until the gap reveals itself. Five blind spots, one at a time. | Anyone — any industry |
+| **`/harness-audit`** | Automated codebase scan. Detects five blind spots by checking files, CI config, and git history. Offers to auto-fix what it finds. | Software developers |
 
-### Build (coming soon)
+### Build
 
 | Skill | What it does | For whom |
 |-------|-------------|----------|
-| **`/harness-plan`** | Design a harness spec for a task or project — goals, context, checks, evaluation criteria. | Anyone |
-| **`/harness-build`** | Generate harness artifacts from a plan — instruction files, check scripts, document templates. | Developers |
+| **`/harness-plan`** | Interactive interview to turn vague goals into structured specs. Two modes: iterative improvement ("make X better") or investigation ("find out why X is broken"). Produces a HARNESS_SPEC.md. | Anyone |
+| **`/harness-build`** | Generate a complete runnable harness project from a spec — frozen targets, agent prompts, orchestration scripts, progress tracking. Three modes: document, code, investigation. | Developers |
 
 ---
 
-## The Five Self-Deceptions
+## The Five Blind Spots
 
 Both diagnostic skills detect the same five patterns — the most common ways teams think they have a harness but actually don't:
 
@@ -50,7 +50,7 @@ The toolkit addresses harness at two scopes:
 
 **Long-Term** — Making the system stay right over weeks and months. Goals stay current, context doesn't rot, checks evolve with new error patterns, the flywheel keeps turning. Self-deception 5 lives here. Self-deception 4 spans both.
 
-Current skills cover both scopes. Future `/harness-plan` and `/harness-build` will include long-term harness design (startup rituals, progress files, scheduled reviews, harness versioning).
+Current skills cover both scopes. `/harness-plan` and `/harness-build` include long-term harness design (startup rituals, progress files, scheduled reviews, harness versioning) as part of the generated harness project.
 
 ---
 
@@ -88,7 +88,7 @@ git clone --depth 1 https://github.com/nnabuuu/harness-engineering-toolkit.git .
 
 **Don't know where to start?** Run `/harness-self-check`. It asks you questions and tells you what to fix first.
 
-**Software developer wanting a scan?** Run `/harness-audit` in your repo. It detects self-deceptions and offers fixes.
+**Software developer wanting a scan?** Run `/harness-audit` in your repo. It detects blind spots and offers fixes.
 
 ---
 
@@ -158,9 +158,17 @@ harness-engineering-toolkit/
 ├── harness-audit/
 │   ├── SKILL.md                         ← Automated audit (generic framework)
 │   └── docs/
-│       ├── scoring-rubric.md            ← 5 self-deceptions, 0-5 each
+│       ├── scoring-rubric.md            ← 5 blind spots, 0-5 each
 │       └── software-engineering.md      ← Software domain adapter + auto-fix templates
-└── examples/                            ← Example outputs (coming soon)
+├── harness-plan/
+│   └── SKILL.md                         ← Define structured spec from vague goals
+├── harness-build/
+│   ├── SKILL.md                         ← Generate runnable harness from spec
+│   └── references/
+│       ├── project-structure.md         ← Directory layout, file roles
+│       ├── prompt-templates.md          ← Agent prompt templates
+│       └── orchestrator-templates.md    ← Bash orchestration patterns
+└── examples/                            ← Example outputs
 ```
 
 ## Extending to Other Domains
@@ -169,7 +177,7 @@ harness-engineering-toolkit/
 
 1. Create `harness-audit/docs/your-domain.md`
 2. Define what to check and where to look, in your domain's terms
-3. Add scoring examples for each self-deception
+3. Add scoring examples for each blind spot
 4. The generic rubric stays the same — only the evidence changes
 
 ---
