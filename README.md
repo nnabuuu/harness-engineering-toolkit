@@ -56,29 +56,25 @@ Current skills cover both scopes. `/harness-plan` and `/harness-build` include l
 
 ## Install
 
-### Claude Code
+### Any agent (Claude Code, Codex, Cursor, Windsurf, Copilot, ...)
 
 ```bash
-git clone --depth 1 https://github.com/nnabuuu/harness-engineering-toolkit.git ~/.claude/skills/harness-engineering-toolkit
+npx skills add nnabuuu/harness-engineering-toolkit
 ```
 
-### As project skills (recommended for teams)
+The CLI auto-detects your installed agents and places skills in the correct directories. Supports 41+ tools via the [open Agent Skills standard](https://agentskills.io).
+
+Options:
 
 ```bash
-cd /path/to/your/project
-mkdir -p .claude/skills
-git clone --depth 1 https://github.com/nnabuuu/harness-engineering-toolkit.git .claude/skills/harness-engineering-toolkit
-```
-
-### Other agents (Codex, Cursor, Windsurf)
-
-```bash
-git clone --depth 1 https://github.com/nnabuuu/harness-engineering-toolkit.git .agents/skills/harness-engineering-toolkit
+npx skills add nnabuuu/harness-engineering-toolkit -g          # Global install
+npx skills add nnabuuu/harness-engineering-toolkit -a claude-code  # Target specific agent
+npx skills add nnabuuu/harness-engineering-toolkit --list       # Preview available skills
 ```
 
 ### Upload to claude.ai
 
-1. Download the `SKILL.md` files from `harness-self-check/` and `harness-audit/`
+1. Download the `SKILL.md` files from each skill directory
 2. Create a Project in claude.ai → upload the SKILL.md files as Project Knowledge
 3. Start chatting: "Check my harness setup"
 

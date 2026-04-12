@@ -56,29 +56,25 @@ Toolkit 在两个尺度上工作：
 
 ## 安装
 
-### Claude Code
+### 任何 Agent（Claude Code、Codex、Cursor、Windsurf、Copilot……）
 
 ```bash
-git clone --depth 1 https://github.com/nnabuuu/harness-engineering-toolkit.git ~/.claude/skills/harness-engineering-toolkit
+npx skills add nnabuuu/harness-engineering-toolkit
 ```
 
-### 作为项目 skill（推荐团队使用）
+CLI 自动检测已安装的 agent，将 skill 放到正确的目录。支持 41+ 种工具，基于开放的 [Agent Skills 标准](https://agentskills.io)。
+
+选项：
 
 ```bash
-cd /path/to/your/project
-mkdir -p .claude/skills
-git clone --depth 1 https://github.com/nnabuuu/harness-engineering-toolkit.git .claude/skills/harness-engineering-toolkit
-```
-
-### 其他 Agent（Codex、Cursor、Windsurf）
-
-```bash
-git clone --depth 1 https://github.com/nnabuuu/harness-engineering-toolkit.git .agents/skills/harness-engineering-toolkit
+npx skills add nnabuuu/harness-engineering-toolkit -g          # 全局安装
+npx skills add nnabuuu/harness-engineering-toolkit -a claude-code  # 指定目标 agent
+npx skills add nnabuuu/harness-engineering-toolkit --list       # 预览可用 skill
 ```
 
 ### 上传到 claude.ai
 
-1. 下载 `harness-self-check/` 和 `harness-audit/` 目录下的 `SKILL.md` 文件
+1. 下载各 skill 目录下的 `SKILL.md` 文件
 2. 在 claude.ai 创建 Project → 上传 SKILL.md 文件作为 Project Knowledge
 3. 开始对话："检查一下我的 harness 设置"
 
