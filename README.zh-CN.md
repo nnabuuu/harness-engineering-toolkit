@@ -1,6 +1,6 @@
 # Harness Engineering Toolkit
 
-[English](README.md)
+[![English](https://img.shields.io/badge/lang-English-blue)](README.md) [![简体中文](https://img.shields.io/badge/lang-简体中文-red)](README.zh-CN.md)
 
 一组用于诊断和改进 AI agent harness 的工具——harness 是围绕 agent 构建的系统环境，决定了 agent 能否可靠地完成任务。
 

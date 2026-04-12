@@ -1,6 +1,6 @@
 # Harness Engineering Toolkit
 
-[简体中文](README.zh-CN.md)
+[![English](https://img.shields.io/badge/lang-English-blue)](README.md) [![简体中文](https://img.shields.io/badge/lang-简体中文-red)](README.zh-CN.md)
 
 Skills for diagnosing and improving the harness around your AI agent — the system that determines whether it succeeds or fails.
 
