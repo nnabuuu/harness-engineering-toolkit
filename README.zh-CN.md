@@ -89,6 +89,15 @@ npx skills add nnabuuu/harness-engineering-toolkit --list       # 预览可用 s
 - 跨迭代的运行历史
 - 从 UI 手动重试和重新运行
 
+**原理：** 创建 harness 时，会在 DAGU 的 DAGs 目录（`~/.dagu/dags/harness-{task-name}.yaml`）建一个指向 harness 中 `dag.yaml` 的符号链接（symlink）。DAGU 自动发现这个链接——不需要复制文件，也不需要改配置。Harness 留在 `.harness-workspace/` 里，DAGU 原地读取。
+
+也可以手动管理注册：
+
+```bash
+bash harness.sh --register-dagu     # 重新创建 symlink
+bash harness.sh --unregister-dagu   # 移除 symlink
+```
+
 **安装 DAGU（可选）：**
 
 ```bash

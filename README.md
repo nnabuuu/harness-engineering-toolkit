@@ -89,6 +89,15 @@ npx skills add nnabuuu/harness-engineering-toolkit --list       # Preview availa
 - Run history across iterations
 - Manual retry and re-run from the UI
 
+**How it works:** At harness creation time, a symlink is created from DAGU's DAGs directory (`~/.dagu/dags/harness-{task-name}.yaml`) to your harness's `dag.yaml`. DAGU picks up the symlink automatically — no copying, no config editing. The harness stays in `.harness-workspace/` and DAGU reads it in place.
+
+You can also manage registration manually:
+
+```bash
+bash harness.sh --register-dagu     # Re-create symlink
+bash harness.sh --unregister-dagu   # Remove symlink
+```
+
 **Install DAGU (optional):**
 
 ```bash
