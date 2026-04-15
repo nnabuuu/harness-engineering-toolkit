@@ -25,11 +25,15 @@ Built on the **4-Layer Harness Model**:
 |-------|-------------|----------|
 | **`/harness-create`** | End-to-end harness creation: interview → spec → runnable project. Two entry points: start from scratch (interviews you first) or from existing HARNESS_SPEC.md (skips to build). Three build modes: document, code, investigation. | Anyone |
 
+### Reflect
+
+| Skill | What it does | For whom |
+|-------|-------------|----------|
+| **`/harness-retro`** | Retrospective on completed harness tasks. Analyzes run data (scores, eval reports, changelogs) across 6 dimensions: convergence, bottleneck dimensions, repeated work, cost efficiency, prompt quality, and cross-task patterns. Generates concrete prompt/rubric improvements. Optionally archives completed tasks. | Anyone who has run a harness |
+
 ---
 
 ## The Five Blind Spots
-
-Both diagnostic skills detect the same five patterns — the most common ways teams think they have a harness but actually don't:
 
 | # | You think | Actually |
 |---|-----------|----------|
@@ -38,18 +42,6 @@ Both diagnostic skills detect the same five patterns — the most common ways te
 | 3 | "I have checks" | CI runs defaults only, project-specific errors aren't caught |
 | 4 | "I review everything" | No criteria, quality varies by how busy you are |
 | 5 | "I set up my harness" | Nothing changed in 30+ days, flywheel stopped |
-
----
-
-## Two Scopes
-
-The toolkit addresses harness at two scopes:
-
-**Single-Session** — Making one agent do one task right. Goal is clear, context is loaded, checks run before delivery, output is evaluated. Self-deceptions 1-3 live here.
-
-**Long-Term** — Making the system stay right over weeks and months. Goals stay current, context doesn't rot, checks evolve with new error patterns, the flywheel keeps turning. Self-deception 5 lives here. Self-deception 4 spans both.
-
-Current skills cover both scopes. `/harness-create` includes long-term harness design (startup rituals, progress files, scheduled reviews, harness versioning) as part of the generated harness project.
 
 ---
 
@@ -81,31 +73,7 @@ npx skills add nnabuuu/harness-engineering-toolkit --list       # Preview availa
 
 ## Progress Monitoring with DAGU
 
-`/harness-create` generates a `dag.yaml` alongside every harness. If [DAGU](https://dagu.readthedocs.io) is installed locally, the harness auto-registers itself so you can monitor progress in a web UI.
-
-**What you get:**
-- Dependency graph showing each step (generator → evaluator → exit check)
-- Per-step status (running / succeeded / failed), duration, and stdout logs
-- Run history across iterations
-- Manual retry and re-run from the UI
-
-**How it works:** At harness creation time, a symlink is created from DAGU's DAGs directory (`~/.dagu/dags/harness-{task-name}.yaml`) to your harness's `dag.yaml`. DAGU picks up the symlink automatically — no copying, no config editing. The harness stays in `.harness-workspace/` and DAGU reads it in place.
-
-You can also manage registration manually:
-
-```bash
-bash harness.sh --register-dagu     # Re-create symlink
-bash harness.sh --unregister-dagu   # Remove symlink
-```
-
-**Install DAGU (optional):**
-
-```bash
-brew install dagu-org/brew/dagu   # macOS
-dagu server                        # Start UI at http://localhost:8080
-```
-
-If DAGU is not installed, the harness runs standalone via `bash harness.sh` with no loss of functionality.
+`/harness-create` generates a `dag.yaml` alongside every harness. If [DAGU](https://dagu.readthedocs.io) is installed, you get a web UI with dependency graphs, step status, and run history. [details →](docs/dagu.md)
 
 ---
 
@@ -119,93 +87,14 @@ If DAGU is not installed, the harness runs standalone via `bash harness.sh` with
 
 ## Usage Examples
 
-### /harness-self-check
-
-```
-You:    /harness-self-check
-Agent:  Tell me briefly: what AI agent are you using, and what's it doing for you?
-You:    Claude Code, building a B2B platform...
-Agent:  You probably have some kind of goal doc — a PRD, a spec, something.
-        When was the last time you opened it and checked whether it still
-        matches what you're building today?
-You:    Hmm... it's been a while.
-Agent:  So your agent has been faithfully working toward a goal you wrote
-        three months ago, while your actual product has moved on. Every
-        hour it spends is optimizing the wrong thing.
-        ...
-Agent:  ## Harness Diagnostic Report
-        Self-deceptions found: 4/5
-        The biggest gap: The Stale Goal...
-        The fix: Open your PRD, rewrite the first paragraph to match
-        what you're actually building. 30 minutes.
-```
-
-### /harness-audit
-
-```
-You:    /harness-audit
-Agent:  [scans files, CI config, git history]
-
-        # Harness Audit Report
-
-        ## Findings
-
-        ### ⚠️ The Stale Goal — DETECTED
-        docs/PRD.md last modified 94 days ago. CLAUDE.md does not
-        reference it. Your agent doesn't know this file exists.
-
-        ### ✅ The Monolith — NOT DETECTED
-        CLAUDE.md is 72 lines, links to 4 sub-documents. Healthy.
-
-        ### ⚠️ The Paper Rule — DETECTED
-        5 "don't do X" rules in CLAUDE.md. Only 2 have automated checks.
-        3 are paper-only.
-
-        Want me to create a check script for the 3 paper rules?
-```
+See what a diagnostic session and an automated audit look like in practice. [examples →](docs/examples.md)
 
 ---
 
-## File Structure
+## Learn More
 
-```
-harness-engineering-toolkit/
-├── .claude/
-│   └── CLAUDE.md                        ← Skill routing for Claude Code
-├── .gitignore
-├── LICENSE
-├── README.md                            ← English
-├── README.zh-CN.md                      ← 简体中文
-├── shared/
-│   └── 4-layer-model.md                 ← Model reference (used by all skills)
-├── harness-self-check/
-│   └── SKILL.md                         ← Interactive diagnostic (any industry)
-├── harness-audit/
-│   ├── SKILL.md                         ← Automated audit (generic framework)
-│   └── docs/
-│       ├── scoring-rubric.md            ← 5 blind spots, 0-5 each
-│       └── software-engineering.md      ← Software domain adapter + auto-fix templates
-├── harness-create/
-│   ├── SKILL.md                         ← End-to-end: interview → spec → project
-│   └── references/
-│       ├── planning-interview.md        ← Interview question sequences
-│       ├── spec-templates.md            ← HARNESS_SPEC.md output templates
-│       ├── design-rules.md              ← Build mode rules and pipeline
-│       ├── project-structure.md         ← Directory layout, file roles
-│       ├── prompt-templates.md          ← Agent prompt templates
-│       └── orchestrator-templates.md    ← Bash orchestration + DAGU DAG patterns
-├── .harness-workspace/                  ← Generated harness projects (gitignored)
-└── examples/                            ← Example outputs
-```
-
-## Extending to Other Domains
-
-`software-engineering.md` is the first domain adapter. To add your own:
-
-1. Create `harness-audit/docs/your-domain.md`
-2. Define what to check and where to look, in your domain's terms
-3. Add scoring examples for each blind spot
-4. The generic rubric stays the same — only the evidence changes
+- [Two Scopes](docs/concepts.md) — single-session vs. long-term harness
+- [File Structure & Extending](docs/extending.md) — project layout and adding domain adapters
 
 ---
 
