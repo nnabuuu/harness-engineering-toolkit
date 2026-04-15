@@ -23,8 +23,7 @@ Built on the **4-Layer Harness Model**:
 
 | Skill | What it does | For whom |
 |-------|-------------|----------|
-| **`/harness-plan`** | Interactive interview to turn vague goals into structured specs. Two modes: iterative improvement ("make X better") or investigation ("find out why X is broken"). Produces a HARNESS_SPEC.md. | Anyone |
-| **`/harness-build`** | Generate a complete runnable harness project from a spec — frozen targets, agent prompts, orchestration scripts, progress tracking. Three modes: document, code, investigation. | Developers |
+| **`/harness-create`** | End-to-end harness creation: interview → spec → runnable project. Two entry points: start from scratch (interviews you first) or from existing HARNESS_SPEC.md (skips to build). Three build modes: document, code, investigation. | Anyone |
 
 ---
 
@@ -50,7 +49,7 @@ The toolkit addresses harness at two scopes:
 
 **Long-Term** — Making the system stay right over weeks and months. Goals stay current, context doesn't rot, checks evolve with new error patterns, the flywheel keeps turning. Self-deception 5 lives here. Self-deception 4 spans both.
 
-Current skills cover both scopes. `/harness-plan` and `/harness-build` include long-term harness design (startup rituals, progress files, scheduled reviews, harness versioning) as part of the generated harness project.
+Current skills cover both scopes. `/harness-create` includes long-term harness design (startup rituals, progress files, scheduled reviews, harness versioning) as part of the generated harness project.
 
 ---
 
@@ -156,11 +155,12 @@ harness-engineering-toolkit/
 │   └── docs/
 │       ├── scoring-rubric.md            ← 5 blind spots, 0-5 each
 │       └── software-engineering.md      ← Software domain adapter + auto-fix templates
-├── harness-plan/
-│   └── SKILL.md                         ← Define structured spec from vague goals
-├── harness-build/
-│   ├── SKILL.md                         ← Generate runnable harness from spec
+├── harness-create/
+│   ├── SKILL.md                         ← End-to-end: interview → spec → project
 │   └── references/
+│       ├── planning-interview.md        ← Interview question sequences
+│       ├── spec-templates.md            ← HARNESS_SPEC.md output templates
+│       ├── design-rules.md              ← Build mode rules and pipeline
 │       ├── project-structure.md         ← Directory layout, file roles
 │       ├── prompt-templates.md          ← Agent prompt templates
 │       └── orchestrator-templates.md    ← Bash orchestration patterns

@@ -23,8 +23,7 @@
 
 | 工具 | 功能 | 适用对象 |
 |------|------|---------|
-| **`/harness-plan`** | 交互式访谈，将模糊目标转化为结构化规格。两种模式：迭代改进（"把 X 做得更好"）或调查诊断（"X 为什么出问题"）。输出 HARNESS_SPEC.md。 | 任何行业 |
-| **`/harness-build`** | 从规格生成完整可运行的 harness 项目——冻结目标、agent 提示词、编排脚本、进度追踪。三种模式：文档、代码、调查。 | 开发者 |
+| **`/harness-create`** | 端到端 harness 创建：访谈 → 规格 → 可运行项目。两个入口：从零开始（先访谈）或从已有 HARNESS_SPEC.md（直接构建）。三种构建模式：文档、代码、调查。 | 任何行业 |
 
 ---
 
@@ -50,7 +49,7 @@ Toolkit 在两个尺度上工作：
 
 **长期运转** — 让系统在数周、数月后仍然正确。目标保持最新、上下文不腐烂、检查规则跟上新的错误模式、飞轮持续转动。盲区 5 在这个尺度。盲区 4 横跨两者。
 
-当前工具覆盖两个尺度。`/harness-plan` 和 `/harness-build` 在生成的 harness 项目中包含长期设计（启动仪式、进度文件、定期巡检、harness 版本化）。
+当前工具覆盖两个尺度。`/harness-create` 在生成的 harness 项目中包含长期设计（启动仪式、进度文件、定期巡检、harness 版本化）。
 
 ---
 
@@ -153,11 +152,12 @@ harness-engineering-toolkit/
 │   └── docs/
 │       ├── scoring-rubric.md            ← 五种盲区评分标准
 │       └── software-engineering.md      ← 软件领域适配器 + 自动修复模板
-├── harness-plan/
-│   └── SKILL.md                         ← 从模糊目标定义结构化规格
-├── harness-build/
-│   ├── SKILL.md                         ← 从规格生成可运行的 harness
+├── harness-create/
+│   ├── SKILL.md                         ← 端到端：访谈 → 规格 → 项目
 │   └── references/
+│       ├── planning-interview.md        ← 访谈问题序列
+│       ├── spec-templates.md            ← HARNESS_SPEC.md 输出模板
+│       ├── design-rules.md              ← 构建模式规则和流水线
 │       ├── project-structure.md         ← 目录结构、文件角色
 │       ├── prompt-templates.md          ← Agent 提示词模板
 │       └── orchestrator-templates.md    ← Bash 编排脚本模式

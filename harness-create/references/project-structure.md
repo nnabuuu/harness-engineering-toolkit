@@ -2,14 +2,27 @@
 
 Complete specification of the harness project directory layout. Each file has a specific role in the overnight iteration loop.
 
-## Two Artifact Modes
+## Workspace Root
+
+All harness projects live under `.harness-workspace/` in the user's project root. This keeps harness artifacts organized and out of the main source tree.
+
+```
+.harness-workspace/
+├── {task-name}/          # Each harness gets its own subdirectory
+├── {another-task}/
+└── ...
+```
+
+Create `.harness-workspace/` if it doesn't exist. Add it to `.gitignore` if the user prefers harness artifacts untracked (ask on first use).
+
+## Three Artifact Modes
 
 ### Document Mode (articles, reports, specs, data files)
 
 Artifacts are self-contained files. Each iteration produces a new versioned file.
 
 ```
-{task-name}/
+.harness-workspace/{task-name}/
 ├── SPEC.md                     # [FROZEN] Task specification — the target
 ├── EVAL_CRITERIA.md            # [CONFIGURABLE] Scoring rubric
 ├── prompts/
@@ -40,7 +53,7 @@ Artifacts are self-contained files. Each iteration produces a new versioned file
 Artifacts are live source files in the project. Git commits serve as version snapshots — no `drafts/` directory.
 
 ```
-{task-name}/
+.harness-workspace/{task-name}/
 ├── SPEC.md
 ├── EVAL_CRITERIA.md
 ├── prompts/
@@ -73,7 +86,7 @@ Note: In Code Mode, the artifact lives in the project source tree (e.g., `packag
 No artifact to iterate on. The "output" is evidence and a root cause report.
 
 ```
-{task-name}/
+.harness-workspace/{task-name}/
 ├── SPEC.md                     # [FROZEN] Symptoms, hypotheses, code path, verification steps
 ├── prompts/
 │   └── investigator.md         # Investigator agent instructions
@@ -153,7 +166,8 @@ Note: Investigation Mode has no `drafts/`, `changelogs/`, or `eval-reports/` dir
 
 ## Naming Conventions
 
-- **Task directory**: `{descriptive-name}` (e.g., `chat-interface-ui-polish`)
+- **Workspace root**: `.harness-workspace/`
+- **Task directory**: `.harness-workspace/{descriptive-name}` (e.g., `.harness-workspace/chat-interface-ui-polish`)
 - **Draft files**: `v{N}.{ext}` — sequential, zero-padded not required
 - **Changelog files**: `v{N}-changelog.md`
 - **Eval reports**: `v{N}-eval.md` — always markdown
@@ -164,7 +178,7 @@ Note: Investigation Mode has no `drafts/`, `changelogs/`, or `eval-reports/` dir
 ### Document Mode (recommended)
 
 ```bash
-cd {task-name}
+cd .harness-workspace/{task-name}
 git init
 git add SPEC.md EVAL_CRITERIA.md prompts/ harness.sh README.md progress.md
 git commit -m "init: harness setup"
