@@ -20,11 +20,14 @@ Turn a goal into a running overnight harness — from interview through spec to 
 - [ ] `--allowedTools` set for each `claude -p` invocation
 - [ ] Git commits after each step in the orchestrator
 - [ ] All exit conditions from the spec are implemented
-- [ ] Orchestrator supports `--dry-run`, `--resume`, `--max-cost`
+- [ ] Orchestrator supports `--dry-run`, `--resume`, `--max-cost`, `--step`, `--status`, `--register-dagu`, `--unregister-dagu`
 - [ ] Generator writes changelog to a dedicated FILE (not stdout)
 - [ ] Evaluator writes report to a dedicated FILE (not stdout)
 - [ ] Orchestrator extracts data from files (not stdout)
+- [ ] Orchestrator uses state.json for sub-step tracking (jq dependency checked)
 - [ ] Orchestrator injects starting-point context per iteration
+- [ ] dag.yaml generated with steps matching harness.sh step functions
+- [ ] DAGU auto-registration attempted (symlink if dagu installed, skip if not)
 - [ ] [Code Mode] Validation step with revert on failure
 - [ ] [Code Mode] Frozen file violation gate
 - [ ] [Code Mode] Regression detection (revert if score drops > 5)
@@ -145,19 +148,42 @@ Read `references/prompt-templates.md` for base templates and the tool permission
 
 Generate prompts for each agent defined in the spec. Customize templates with task-specific values. Replace ALL placeholders.
 
-### Step 2.4: Generate Orchestrator Script
+### Step 2.4: Generate Orchestrator Script + DAGU DAG
 
-Read `references/orchestrator-templates.md` for bash templates and key patterns.
+Read `references/orchestrator-templates.md` for bash templates, state.json patterns, and DAGU YAML templates.
 
 Generate `harness.sh` implementing:
 - All exit conditions from the spec
-- `--dry-run`, `--resume`, `--max-cost` flags
+- `--dry-run`, `--resume`, `--max-cost`, `--step <name> --iteration <N>`, `--status` flags
+- `state.json` sub-step tracking via `jq` (check for `jq` at startup)
+- `run_step` wrapper for every sub-step (skip completed, update state on start/success/failure)
 - File-based data extraction (not stdout)
 - Starting-point injection per iteration
 - Git snapshots per step
 - Mode-specific patterns (validation+revert for Code Mode, hypothesis tracking for Investigation Mode)
 
-### Step 2.5: Self-Review
+Generate `dag.yaml` implementing:
+- One DAGU step per harness sub-step, using `harness.sh --step <name> --iteration ${ITERATION}`
+- Correct `depends` chain matching the mode's step sequence
+- Retry policies on `generator`/`evaluator`/`investigator` steps
+- Replace all `[PLACEHOLDERS]` with task-specific values
+
+After writing `dag.yaml`, call `register_dagu` (Key Patterns §10) to auto-symlink into DAGU's DAGs directory if DAGU is installed locally. Skip silently if not.
+
+### Step 2.5: Prompt DAGU Installation
+
+After harness generation, proactively inform the user about DAGU for progress monitoring:
+
+- **If DAGU is installed**: Print the DAGU UI URL and tell the user the harness is registered. Example:
+  > Your harness is registered in DAGU. View progress at http://localhost:8080 (or your configured port).
+  > Run `dagu start dag.yaml --params "ITERATION=1"` to start via DAGU, or `bash harness.sh` to run standalone.
+
+- **If DAGU is NOT installed**: Suggest installation. Example:
+  > Tip: Install DAGU to monitor harness progress in a web UI — see each step's status, logs, and duration in real time.
+  > Install: `brew install dagu-org/brew/dagu` (macOS) or see https://dagu.readthedocs.io
+  > After installing, run `bash harness.sh --register-dagu` to register this harness.
+
+### Step 2.6: Self-Review
 
 Re-read the Self-Review Checklist at the top of this file. Verify every applicable item. Fix any violations before presenting the output to the user.
 
@@ -188,4 +214,4 @@ Re-read the Self-Review Checklist at the top of this file. Verify every applicab
 | 2.1 | `references/design-rules.md` | Determining build mode and rules |
 | 2.2 | `references/project-structure.md` | Creating project directory layout |
 | 2.3 | `references/prompt-templates.md` | Writing agent prompts |
-| 2.4 | `references/orchestrator-templates.md` | Writing harness.sh |
+| 2.4 | `references/orchestrator-templates.md` | Writing harness.sh + dag.yaml |

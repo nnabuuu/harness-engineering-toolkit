@@ -31,6 +31,8 @@ Artifacts are self-contained files. Each iteration produces a new versioned file
 │   ├── planner.md              # (Optional) Planner agent
 │   └── specialist-{name}.md    # (Optional) Domain specialist agents
 ├── harness.sh                  # Bash orchestrator script
+├── state.json                  # State machine — single source of truth for progress
+├── dag.yaml                    # (Optional) DAGU DAG definition for visualization/control
 ├── progress.md                 # Cross-session iteration log
 ├── drafts/                     # Versioned artifacts + changelogs
 │   ├── v0.{ext}                # (Optional) Initial artifact if pre-existing
@@ -61,6 +63,8 @@ Artifacts are live source files in the project. Git commits serve as version sna
 │   ├── evaluator.md
 │   └── ...
 ├── harness.sh
+├── state.json                  # State machine — single source of truth for progress
+├── dag.yaml                    # (Optional) DAGU DAG definition for visualization/control
 ├── progress.md
 ├── changelogs/                 # Generator writes changelogs here
 │   ├── v1-changelog.md
@@ -91,6 +95,8 @@ No artifact to iterate on. The "output" is evidence and a root cause report.
 ├── prompts/
 │   └── investigator.md         # Investigator agent instructions
 ├── harness.sh                  # Investigation loop script
+├── state.json                  # State machine — single source of truth for progress
+├── dag.yaml                    # (Optional) DAGU DAG definition for visualization/control
 ├── progress.md                 # Investigation progress (hypothesis → status per round)
 ├── evidence/                   # One file per hypothesis
 │   ├── h1-{name}.md            # Evidence for hypothesis 1
@@ -105,6 +111,22 @@ Note: Investigation Mode has no `drafts/`, `changelogs/`, or `eval-reports/` dir
 **Choose mode based on HARNESS_SPEC.md.** When in doubt, ask the user.
 
 ## File Roles
+
+### state.json — The State Machine
+- **Created**: At harness setup (initialized with harness name, mode, config)
+- **Modified**: By orchestrator after every sub-step transition
+- **Read by**: Orchestrator (on `--resume` to find exact restart point), DAGU (optional, for visualization)
+- **Purpose**: Single source of truth for harness progress. Enables fine-grained resume from the exact sub-step that failed, not the whole iteration.
+- **Critical property**: Must be updated atomically via `jq`. Contains per-iteration step statuses (pending/running/completed/failed), scores, timestamps, and error messages.
+- **Dependency**: Requires `jq` CLI tool. Orchestrator checks for `jq` at startup and prints install instructions if missing.
+
+### dag.yaml — DAGU Integration (Optional)
+- **Created**: At harness setup alongside harness.sh
+- **Modified**: Never during automated runs
+- **Read by**: DAGU scheduler (if installed)
+- **Purpose**: Enables web UI visualization and control of the harness loop. Each sub-step appears as a node in the DAGU DAG graph with per-step logs and retry controls.
+- **Critical property**: Maps 1:1 to the step functions in harness.sh. Uses `harness.sh --step <name> --iteration <N>` to invoke individual steps.
+- **When to skip**: If the user explicitly says they won't use DAGU, omit this file.
 
 ### SPEC.md — The Frozen Target
 - **Created**: Once, at harness setup

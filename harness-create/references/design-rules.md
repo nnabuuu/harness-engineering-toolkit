@@ -30,6 +30,8 @@ Choose based on HARNESS_SPEC.md. When in doubt, ask.
 
 6. **Starting-point injection**: Orchestrator appends iteration-specific context (version, artifact path, changelog path) at invocation time. See `orchestrator-templates.md`.
 
+7. **State tracking via state.json**: `state.json` is the single source of truth for harness progress. The orchestrator updates it after every sub-step (generator, git commit, evaluator, extract, exit check). On `--resume`, the orchestrator reads `state.json` to find the exact sub-step that failed and restarts from there — not the whole iteration. Requires `jq`. See `orchestrator-templates.md` for helper functions and the step-based state machine pattern.
+
 ---
 
 ## Generation Pipeline
@@ -52,10 +54,10 @@ Read `prompt-templates.md` for base templates.
 **[Investigation Mode]:**
 - **Investigator must have**: fresh context warning (top), hypothesis-driven workflow, one-hypothesis-per-round constraint, evidence file output (`evidence/h{N}-{name}.md`), CONFIRMED/ELIMINATED/INCONCLUSIVE judgment requirement.
 
-### Step 4: Orchestrator Script
-Read `orchestrator-templates.md` for bash template.
+### Step 4: Orchestrator Script + DAGU DAG
+Read `orchestrator-templates.md` for bash template and DAGU YAML template.
 
-Must support: `--dry-run`, `--resume`, `--max-cost`. Must implement all exit conditions. Must extract data from files, not stdout.
+Must support: `--dry-run`, `--resume`, `--max-cost`, `--step <name> --iteration <N>`, `--status`. Must implement all exit conditions. Must extract data from files, not stdout. Must use `state.json` for sub-step tracking (requires `jq`). Generate `dag.yaml` alongside `harness.sh` for optional DAGU visualization.
 
 ### Step 5: progress.md
 Initialize with v0 row. See `project-structure.md` for format.

@@ -79,6 +79,27 @@ npx skills add nnabuuu/harness-engineering-toolkit --list       # Preview availa
 
 ---
 
+## Progress Monitoring with DAGU
+
+`/harness-create` generates a `dag.yaml` alongside every harness. If [DAGU](https://dagu.readthedocs.io) is installed locally, the harness auto-registers itself so you can monitor progress in a web UI.
+
+**What you get:**
+- Dependency graph showing each step (generator → evaluator → exit check)
+- Per-step status (running / succeeded / failed), duration, and stdout logs
+- Run history across iterations
+- Manual retry and re-run from the UI
+
+**Install DAGU (optional):**
+
+```bash
+brew install dagu-org/brew/dagu   # macOS
+dagu server                        # Start UI at http://localhost:8080
+```
+
+If DAGU is not installed, the harness runs standalone via `bash harness.sh` with no loss of functionality.
+
+---
+
 ## Quick Start
 
 **Don't know where to start?** Run `/harness-self-check`. It asks you questions and tells you what to fix first.
@@ -163,7 +184,8 @@ harness-engineering-toolkit/
 │       ├── design-rules.md              ← Build mode rules and pipeline
 │       ├── project-structure.md         ← Directory layout, file roles
 │       ├── prompt-templates.md          ← Agent prompt templates
-│       └── orchestrator-templates.md    ← Bash orchestration patterns
+│       └── orchestrator-templates.md    ← Bash orchestration + DAGU DAG patterns
+├── .harness-workspace/                  ← Generated harness projects (gitignored)
 └── examples/                            ← Example outputs
 ```
 

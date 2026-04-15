@@ -79,6 +79,27 @@ npx skills add nnabuuu/harness-engineering-toolkit --list       # 预览可用 s
 
 ---
 
+## 用 DAGU 监控进度
+
+`/harness-create` 在生成 harness 的同时会生成 `dag.yaml`。如果本地安装了 [DAGU](https://dagu.readthedocs.io)，harness 会自动注册，你可以在 Web UI 中实时监控运行进度。
+
+**你能看到什么：**
+- 步骤依赖图（generator → evaluator → exit check）
+- 每步的状态（运行中 / 成功 / 失败）、耗时、stdout 日志
+- 跨迭代的运行历史
+- 从 UI 手动重试和重新运行
+
+**安装 DAGU（可选）：**
+
+```bash
+brew install dagu-org/brew/dagu   # macOS
+dagu server                        # 启动 UI，默认 http://localhost:8080
+```
+
+不装 DAGU 也不影响使用，`bash harness.sh` 独立运行，功能完全相同。
+
+---
+
 ## 快速开始
 
 **不知道从哪开始？** 跑 `/harness-self-check`，它会问你问题，告诉你最该改的一件事。
@@ -160,8 +181,9 @@ harness-engineering-toolkit/
 │       ├── design-rules.md              ← 构建模式规则和流水线
 │       ├── project-structure.md         ← 目录结构、文件角色
 │       ├── prompt-templates.md          ← Agent 提示词模板
-│       └── orchestrator-templates.md    ← Bash 编排脚本模式
-└── examples/                            ← 示例输出（即将添加）
+│       └── orchestrator-templates.md    ← Bash 编排 + DAGU DAG 模式
+├── .harness-workspace/                  ← 生成的 harness 项目（已 gitignore）
+└── examples/                            ← 示例输出
 ```
 
 ## 扩展到其他行业
