@@ -1,0 +1,42 @@
+{
+  "name": "harness-engineering-toolkit",
+  "version": "1.0.0",
+  "description": "Diagnose and fix the harness around your AI agent — the system that decides whether it succeeds or fails.",
+  "author": "nnabuuu",
+  "license": "MIT",
+  "repository": "https://github.com/nnabuuu/harness-engineering-toolkit",
+  "keywords": [
+    "ai-agent",
+    "harness",
+    "prompt-engineering",
+    "agent-evaluation",
+    "developer-tools",
+    "claude-code",
+    "cursor",
+    "codex",
+    "llmops",
+    "ai-tools"
+  ],
+  "skills": [
+    {
+      "name": "harness-self-check",
+      "description": "Interactive diagnostic. Probes five blind spots in your AI agent harness through conversation.",
+      "path": "harness-self-check/SKILL.md"
+    },
+    {
+      "name": "harness-audit",
+      "description": "Automated codebase scan. Detects five blind spots by checking files, CI config, and git history. Offers auto-fix.",
+      "path": "harness-audit/SKILL.md"
+    },
+    {
+      "name": "harness-create",
+      "description": "End-to-end harness creation: interview, spec, runnable project. Three build modes: document, code, investigation.",
+      "path": "harness-create/SKILL.md"
+    },
+    {
+      "name": "harness-retro",
+      "description": "Retrospective on completed harness tasks. Analyzes convergence, bottlenecks, cost. Suggests improvements.",
+      "path": "harness-retro/SKILL.md"
+    }
+  ]
+}

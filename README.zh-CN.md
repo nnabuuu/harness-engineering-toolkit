@@ -2,7 +2,7 @@
 
 [![English](https://img.shields.io/badge/lang-English-blue)](README.md) [![简体中文](https://img.shields.io/badge/lang-简体中文-red)](README.zh-CN.md)
 
-一组用于诊断和改进 AI agent harness 的工具——harness 是围绕 agent 构建的系统环境，决定了 agent 能否可靠地完成任务。
+大多数团队以为自己的 AI agent 已经搭好了——有目标文档、有指令、有 CI、有 review 流程。实际上目标过期了、指令是一堵文字墙、检查只抓通用错误、review 没有标准、一个月没人更新过。**Harness Engineering Toolkit** 检测这五种盲区并帮你修复。支持任何 AI agent（Claude Code、Codex、Cursor、Windsurf、Copilot 等 41+ 种工具），基于 [Agent Skills](https://agentskills.io) 开放标准。
 
 基于**四层 Harness 模型**：
 

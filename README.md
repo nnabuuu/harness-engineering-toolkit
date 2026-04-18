@@ -2,7 +2,7 @@
 
 [![English](https://img.shields.io/badge/lang-English-blue)](README.md) [![简体中文](https://img.shields.io/badge/lang-简体中文-red)](README.zh-CN.md)
 
-Skills for diagnosing and improving the harness around your AI agent — the system that determines whether it succeeds or fails.
+Most teams think they have a working AI agent setup — a goal doc, some instructions, a CI pipeline, a review process. In practice, the goal is stale, the instructions are a wall of text, the checks only catch generic errors, reviews have no criteria, and nothing has been updated in months. **Harness Engineering Toolkit** detects these five blind spots and helps you fix them. It works with any AI agent (Claude Code, Codex, Cursor, Windsurf, Copilot, and 41+ others) via the [Agent Skills](https://agentskills.io) standard.
 
 Built on the **4-Layer Harness Model**:
 
