@@ -1,6 +1,6 @@
 ---
 name: harness-create
-version: 1.0.0
+version: 1.1.0
 description: "End-to-end harness creation: interview → spec → runnable project. Two entry points: (A) start from scratch — interviews the user, produces HARNESS_SPEC.md, then builds; (B) start from existing HARNESS_SPEC.md — skips straight to build. Three build modes: document, code, investigation. Triggers: 'plan harness', 'build harness', 'create harness', 'harness', 'define spec', 'generate loop', 'overnight task', 'agent loop', '设计harness', '构建harness', '定义验收条件', '生成迭代脚本', '调查bug', '根因分析', 'root cause', 'investigate'."
 ---
 
