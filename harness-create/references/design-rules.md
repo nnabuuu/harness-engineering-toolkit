@@ -32,6 +32,8 @@ Choose based on HARNESS_SPEC.md. When in doubt, ask.
 
 7. **State tracking via state.json**: `state.json` is the single source of truth for harness progress. The orchestrator updates it after every sub-step (generator, git commit, evaluator, extract, exit check). On `--resume`, the orchestrator reads `state.json` to find the exact sub-step that failed and restarts from there — not the whole iteration. Requires `jq`. See `orchestrator-templates.md` for helper functions and the step-based state machine pattern.
 
+8. **Preflight & health checks**: Generated from SPEC.md Prerequisites. `preflight()` runs before the first iteration and on `--resume` — fails fast if environment isn't ready. `health_check()` (optional) runs between iterations — pauses harness if environment degraded. See `orchestrator-templates.md` §10.
+
 ---
 
 ## Generation Pipeline

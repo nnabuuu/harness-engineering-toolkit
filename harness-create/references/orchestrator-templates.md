@@ -348,7 +348,68 @@ run_step() {
 
 Both standalone loop mode and DAGU-driven `--step` mode use the same step functions, so behavior is identical.
 
-### 10. DAGU Auto-Registration
+### 10. Preflight & Health Checks
+
+**`preflight()`** — reads check commands from SPEC.md's Prerequisites table, runs each, fails fast:
+
+```bash
+preflight() {
+  echo "Running preflight checks..."
+  local failed=0
+
+  # Each check: description, command, failure message
+  # Generated from SPEC.md Prerequisites table
+  check "jq installed" "command -v jq" "Install: brew install jq / apt-get install jq"
+  check "claude CLI available" "command -v claude" "Install: npm install -g @anthropic-ai/claude-code"
+  # ... task-specific checks from SPEC.md ...
+
+  if [[ $failed -gt 0 ]]; then
+    echo "ERROR: ${failed} preflight check(s) failed. Fix the above and re-run."
+    exit 1
+  fi
+  echo "All preflight checks passed."
+}
+
+# NOTE: check() increments $failed via bash dynamic scoping.
+# It MUST be called from a function that declares `local failed=0`.
+check() {
+  local desc=$1 cmd=$2 fix=$3
+  # CAUTION: cmd is eval'd. Only use trusted, generator-authored commands here.
+  if eval "$cmd" &>/dev/null; then
+    echo "  [ok] ${desc}"
+  else
+    echo "  [FAIL] ${desc}"
+    echo "    Fix: ${fix}"
+    failed=$((failed + 1))
+  fi
+}
+```
+
+**`health_check()`** — runs between iterations, pauses instead of failing:
+
+```bash
+health_check() {
+  local failed=0
+  # Generated from SPEC.md Health table (if any)
+  # check "dev server responding" "curl -sf http://localhost:3000/health" "Restart: npm run dev"
+  # ...
+
+  if [[ $failed -gt 0 ]]; then
+    echo "WARNING: ${failed} health check(s) failed. Pausing harness."
+    echo "Fix the above issues, then re-run with --resume."
+    state_update '.status = "paused"'
+    exit 2  # distinct from error (exit 1)
+  fi
+}
+```
+
+**Call sites:**
+- `preflight()` at script start, before the main loop (and on `--resume`)
+- `health_check()` at the top of each iteration, only if health checks were defined in SPEC.md
+
+---
+
+### 11. DAGU Auto-Registration
 
 Auto-register `dag.yaml` with a local DAGU instance by symlinking into its DAGs directory. Called once at harness setup time (Phase 2, Step 2.4), not on every run. If DAGU is not installed, skip silently.
 
@@ -428,7 +489,7 @@ harness.sh --register-dagu                # Symlink dag.yaml into DAGU's DAGs di
 harness.sh --unregister-dagu              # Remove the DAGU symlink
 ```
 
-Flag parsing template (requires `register_dagu`/`unregister_dagu` defined above — see Key Patterns §10):
+Flag parsing template (requires `register_dagu`/`unregister_dagu` defined above — see Key Patterns §11):
 
 ```bash
 DRY_RUN=false
@@ -561,7 +622,52 @@ PROMPTS_DIR="${HARNESS_DIR}/prompts"
 PROGRESS_FILE="${HARNESS_DIR}/progress.md"
 STATE_FILE="${HARNESS_DIR}/state.json"
 
-# --- DAGU registration helpers (Key Patterns §10) ---
+# --- Preflight & health check helpers (Key Patterns §10) ---
+# NOTE: check() increments $failed via bash dynamic scoping.
+# It MUST be called from a function that declares `local failed=0`.
+check() {
+  local desc=$1 cmd=$2 fix=$3
+  # CAUTION: cmd is eval'd. Only use trusted, generator-authored commands here.
+  if eval "$cmd" &>/dev/null; then
+    echo "  [ok] ${desc}"
+  else
+    echo "  [FAIL] ${desc}"
+    echo "    Fix: ${fix}"
+    failed=$((failed + 1))
+  fi
+}
+
+preflight() {
+  echo "Running preflight checks..."
+  local failed=0
+
+  # Generated from SPEC.md Prerequisites > Preflight table
+  check "jq installed" "command -v jq" "Install: brew install jq / apt-get install jq"
+  check "claude CLI available" "command -v claude" "Install: npm install -g @anthropic-ai/claude-code"
+  # ... task-specific checks from SPEC.md ...
+
+  if [[ $failed -gt 0 ]]; then
+    echo "ERROR: ${failed} preflight check(s) failed. Fix the above and re-run."
+    exit 1
+  fi
+  echo "All preflight checks passed."
+}
+
+health_check() {
+  local failed=0
+  # Generated from SPEC.md Prerequisites > Health table (if any).
+  # Remove this function body if no health checks are defined.
+  # check "dev server responding" "curl -sf http://localhost:3000/health" "Restart: npm run dev"
+
+  if [[ $failed -gt 0 ]]; then
+    echo "WARNING: ${failed} health check(s) failed. Pausing harness."
+    echo "Fix the above issues, then re-run with --resume."
+    state_update '.status = "paused"'
+    exit 2  # distinct from error (exit 1)
+  fi
+}
+
+# --- DAGU registration helpers (Key Patterns §11) ---
 _dagu_dags_dir() {
   if [[ -n "${DAGU_DAGS_DIR:-}" ]]; then echo "$DAGU_DAGS_DIR"
   else dagu config 2>/dev/null | awk '/DAGs directory/{print $NF}' || echo "${HOME}/.dagu/dags"; fi
@@ -947,9 +1053,15 @@ if $DRY_RUN; then
   exit 0
 fi
 
+# Run preflight checks (on fresh start and on --resume)
+preflight
+
 for i in $(seq $START_VERSION $MAX_ITERATIONS); do
   echo ""
   echo "━━━ Iteration $i / $MAX_ITERATIONS ━━━"
+
+  # Health check between iterations (if defined in SPEC.md)
+  health_check
 
   # Cost check
   completed=$((i - START_VERSION))
@@ -1057,7 +1169,52 @@ PROGRESS_FILE="${HARNESS_DIR}/progress.md"
 SPEC_FILE="${HARNESS_DIR}/SPEC.md"
 STATE_FILE="${HARNESS_DIR}/state.json"
 
-# --- DAGU registration helpers (Key Patterns §10) ---
+# --- Preflight & health check helpers (Key Patterns §10) ---
+# NOTE: check() increments $failed via bash dynamic scoping.
+# It MUST be called from a function that declares `local failed=0`.
+check() {
+  local desc=$1 cmd=$2 fix=$3
+  # CAUTION: cmd is eval'd. Only use trusted, generator-authored commands here.
+  if eval "$cmd" &>/dev/null; then
+    echo "  [ok] ${desc}"
+  else
+    echo "  [FAIL] ${desc}"
+    echo "    Fix: ${fix}"
+    failed=$((failed + 1))
+  fi
+}
+
+preflight() {
+  echo "Running preflight checks..."
+  local failed=0
+
+  # Generated from SPEC.md Prerequisites > Preflight table
+  check "jq installed" "command -v jq" "Install: brew install jq / apt-get install jq"
+  check "claude CLI available" "command -v claude" "Install: npm install -g @anthropic-ai/claude-code"
+  # ... task-specific checks from SPEC.md ...
+
+  if [[ $failed -gt 0 ]]; then
+    echo "ERROR: ${failed} preflight check(s) failed. Fix the above and re-run."
+    exit 1
+  fi
+  echo "All preflight checks passed."
+}
+
+health_check() {
+  local failed=0
+  # Generated from SPEC.md Prerequisites > Health table (if any).
+  # Remove this function body if no health checks are defined.
+  # check "service reachable" "curl -sf http://localhost:3000" "Restart the service"
+
+  if [[ $failed -gt 0 ]]; then
+    echo "WARNING: ${failed} health check(s) failed. Pausing harness."
+    echo "Fix the above issues, then re-run with --resume."
+    state_update '.status = "paused"'
+    exit 2  # distinct from error (exit 1)
+  fi
+}
+
+# --- DAGU registration helpers (Key Patterns §11) ---
 _dagu_dags_dir() {
   if [[ -n "${DAGU_DAGS_DIR:-}" ]]; then echo "$DAGU_DAGS_DIR"
   else dagu config 2>/dev/null | awk '/DAGs directory/{print $NF}' || echo "${HOME}/.dagu/dags"; fi
@@ -1396,9 +1553,15 @@ estimate_cost() {
   echo "scale=2; $total_tokens * $COST_PER_1K_TOKENS / 1000" | bc
 }
 
+# Run preflight checks (on fresh start and on --resume)
+preflight
+
 for i in $(seq $START_ROUND $MAX_ROUNDS); do
   echo ""
   echo "━━━ Investigation Round $i / $MAX_ROUNDS ━━━"
+
+  # Health check between rounds (if defined in SPEC.md)
+  health_check
 
   # Cost check
   completed=$((i - START_ROUND))
@@ -1643,4 +1806,4 @@ steps:
 - **Retries:** DAGU handles per-step retries. The `retry_policy` config on `generator` and `evaluator` steps allows one automatic retry with a 30s delay.
 - **Visualization:** Each step appears as a node in the DAGU web UI graph. Step logs, durations, and statuses are visible per-node.
 - **Without DAGU:** Just run `bash harness.sh` — the standalone loop works identically, using the same step functions and state.json.
-- **Auto-registration:** At harness creation time, `register_dagu` symlinks `dag.yaml` into DAGU's DAGs directory (see Key Patterns §10). Re-run manually with `harness.sh --register-dagu`. Remove with `harness.sh --unregister-dagu`.
+- **Auto-registration:** At harness creation time, `register_dagu` symlinks `dag.yaml` into DAGU's DAGs directory (see Key Patterns §11). Re-run manually with `harness.sh --register-dagu`. Remove with `harness.sh --unregister-dagu`.

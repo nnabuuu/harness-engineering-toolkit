@@ -19,6 +19,21 @@ Output templates for Phase 1. Generate the spec using the appropriate template a
 [Things that must NOT change during the run]
 - ...
 
+## Prerequisites
+
+### Preflight (must pass before harness starts)
+| Check | Command | On failure |
+|-------|---------|------------|
+| jq installed | `command -v jq` | Install: `brew install jq` / `apt-get install jq` |
+| claude CLI available | `command -v claude` | Install: `npm install -g @anthropic-ai/claude-code` |
+| [task-specific check] | `[command]` | [recovery instruction] |
+
+### Health (checked between iterations, optional)
+| Check | Command | On failure |
+|-------|---------|------------|
+| [e.g., dev server responding] | `curl -sf http://localhost:3000/health` | Pause harness, restart server |
+| [e.g., API key valid] | `curl -sf -H "Authorization: Bearer $API_KEY" https://api.example.com/me` | Pause, refresh token |
+
 ## Eval Rubric
 
 ### Scoring Dimensions
@@ -83,6 +98,15 @@ Output templates for Phase 1. Generate the spec using the appropriate template a
 
 ## Reproduction Steps
 [Exact steps to trigger the bug]
+
+## Prerequisites
+
+### Preflight (must pass before harness starts)
+| Check | Command | On failure |
+|-------|---------|------------|
+| jq installed | `command -v jq` | Install: `brew install jq` / `apt-get install jq` |
+| claude CLI available | `command -v claude` | Install: `npm install -g @anthropic-ai/claude-code` |
+| [environment can reproduce symptom] | `[command]` | [recovery instruction] |
 
 ## Code Path
 [Complete call chain from user action to bug manifestation]

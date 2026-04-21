@@ -34,6 +34,8 @@ Turn a goal into a running overnight harness — from interview through spec to 
 - [ ] [Investigation Mode] Investigator writes to `evidence/h{N}-{name}.md`
 - [ ] [Investigation Mode] Explicit CONFIRMED/ELIMINATED/INCONCLUSIVE judgment
 - [ ] [Investigation Mode] Dead-end detection when all hypotheses eliminated
+- [ ] Orchestrator has `preflight()` checking all prerequisites from SPEC.md
+- [ ] [If health checks defined] Orchestrator has `health_check()` between iterations
 
 ---
 
@@ -82,8 +84,8 @@ If borderline, explain routing and let the user confirm.
 
 Read `references/planning-interview.md` for the detailed question sequence.
 
-- **Route A**: Phases 1-4 (Task Understanding → Optimization Target → Agent Architecture → Guardrails)
-- **Route B**: Phases 1D-3D (Symptom Description → Hypothesis Generation → Evidence Collection Plan)
+- **Route A**: Phases 1-4 (Task Understanding → Prerequisites → Optimization Target → Agent Architecture → Guardrails)
+- **Route B**: Phases 1D-3D (Symptom Description → Prerequisites → Hypothesis Generation → Evidence Collection Plan)
 
 Interview rules:
 - Ask questions, wait for answers, then proceed
@@ -156,6 +158,8 @@ Generate `harness.sh` implementing:
 - All exit conditions from the spec
 - `--dry-run`, `--resume`, `--max-cost`, `--step <name> --iteration <N>`, `--status` flags
 - `state.json` sub-step tracking via `jq` (check for `jq` at startup)
+- Preflight checks from SPEC.md Prerequisites (fail fast)
+- Health checks from SPEC.md Prerequisites (pause on failure, if defined)
 - `run_step` wrapper for every sub-step (skip completed, update state on start/success/failure)
 - File-based data extraction (not stdout)
 - Starting-point injection per iteration
@@ -168,7 +172,7 @@ Generate `dag.yaml` implementing:
 - Retry policies on `generator`/`evaluator`/`investigator` steps
 - Replace all `[PLACEHOLDERS]` with task-specific values
 
-After writing `dag.yaml`, call `register_dagu` (Key Patterns §10) to auto-symlink into DAGU's DAGs directory if DAGU is installed locally. Skip silently if not.
+After writing `dag.yaml`, call `register_dagu` (Key Patterns §11) to auto-symlink into DAGU's DAGs directory if DAGU is installed locally. Skip silently if not.
 
 ### Step 2.5: Prompt DAGU Installation
 

@@ -26,6 +26,29 @@ Ask these questions. Wait for answers before proceeding.
 
 ---
 
+### Phase 1.5: Prerequisites & Environment
+
+Before defining eval criteria, establish what must be true for the harness to run at all.
+
+1. **What environment does this run in?**
+   - Local machine, specific directory, Docker container, remote server?
+   - If code: what runtime? (Node.js version, Python venv, etc.)
+
+2. **What must be installed or available before starting?**
+   - Tools (compilers, linters, CLIs)
+   - Services (database, dev server, external APIs)
+   - Credentials (API keys, auth tokens — note: harness won't store these, just checks they exist)
+
+3. **Is there a dev/test environment that needs to be running?**
+   - Dev server? Database? Docker containers?
+   - How to verify it's ready? (URL to hit, port to check, command to run)
+
+4. **What could break during the run?**
+   - Token expiration, service downtime, disk space, rate limits?
+   - For each: how would we detect it? How should the harness react — pause or fail?
+
+---
+
 ### Phase 2: Defining the Optimization Target
 
 Help the user decompose vague goals into scorable dimensions.
@@ -125,6 +148,10 @@ Precisely describe the observable bug behavior. Ask:
 5. **What has already been tried?** Any debugging already done? What was ruled out?
 
 **Output:** A precise symptom statement that any developer could verify independently.
+
+**Prerequisites (lightweight):**
+- Can the symptom be reproduced in the current environment?
+- What services/tools must be running to reproduce it?
 
 ---
 
