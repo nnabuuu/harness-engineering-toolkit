@@ -29,7 +29,7 @@ Built on the **4-Layer Harness Model**:
 
 | Skill | What it does | For whom |
 |-------|-------------|----------|
-| **`/harness-retro`** | Retrospective on completed harness tasks. Analyzes run data (scores, eval reports, changelogs) across 6 dimensions: convergence, bottleneck dimensions, repeated work, cost efficiency, prompt quality, and cross-task patterns. Generates concrete prompt/rubric improvements. Optionally archives completed tasks. | Anyone who has run a harness |
+| **`/harness-retro`** | Retrospective on completed harness tasks. Analyzes run data (scores, eval reports, changelogs) across 6 dimensions: convergence, bottleneck dimensions, repeated work, cost efficiency, prompt quality, and cross-task patterns. Generates concrete prompt/rubric improvements. Two entry points: full retro (analysis → improvements → optional archive) or standalone archive (skip analysis, move completed tasks to `_archive/` with DAGU history preserved). | Anyone who has run a harness |
 
 ---
 
