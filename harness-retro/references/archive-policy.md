@@ -6,52 +6,25 @@ Rules for what to keep, compress, and remove when archiving completed harness ta
 
 ## Prerequisites
 
-- Retro report (RETRO.md) must be generated BEFORE archiving
+- **Full retro path (Entry A → Phase 4):** RETRO.md must exist before archiving (Phase 3 just created it)
+- **Standalone archive path (Entry B → Phase 4A):** RETRO.md recommended but not required — user must acknowledge the warning if missing
 - User must explicitly confirm the archive operation
 - Only archive tasks with status `completed` or `failed` in state.json
 
 ---
 
-## What to Keep in Place
+## What Gets Moved
 
-These files stay in their original location within the task directory — they are the permanent record:
+The entire task directory is moved as-is to `_archive/`. All files are preserved — nothing is compressed or deleted.
 
-| File | Reason |
+---
+
+## What to Clean Up
+
+| Item | Action |
 |------|--------|
-| `SPEC.md` | The frozen target — needed for future reference |
-| `RETRO.md` | The retrospective findings — the learning output |
-| `progress.md` | Score history — quick reference for convergence |
-| `EVAL_CRITERIA.md` | Rubric used — context for understanding the retro |
-| `README.md` | Task documentation |
-| Final eval report | The last `eval-reports/eval-v{N}.md` — the terminal assessment |
-
----
-
-## What to Compress
-
-Bundle into `_archive/{task-name}/artifacts.tar.gz`:
-
-| Directory/Files | Reason for compressing |
-|----------------|----------------------|
-| `eval-reports/` (except final) | Intermediate evaluations — useful for deep analysis but not day-to-day |
-| `changelogs/` | Iteration-by-iteration changes — bulky but occasionally needed |
-| `prompts/` | Agent prompts — useful to compare against future templates |
-| `drafts/` or `output/` | Intermediate artifacts — the largest files, rarely re-read |
-| `evidence/` (investigation mode) | Hypothesis evidence files |
-| `screenshots/` | Visual artifacts if present |
-
----
-
-## What to Remove
-
-Remove only after compression is verified:
-
-| Item | Condition |
-|------|-----------|
-| DAGU symlink | Run `bash harness.sh --unregister-dagu` to remove `~/.dagu/dags/harness-{task-name}.yaml` |
 | `state.json` lock fields | Clear `running_step` and `pid` fields if present (stale process info) |
-
-**Never delete** the task directory itself, state.json, or any file listed in "Keep in Place" above.
+| DAGU symlink | **Update** (not remove) — re-point `~/.dagu/dags/harness-{task-name}.yaml` to the new `_archive/{task-name}/dag.yaml` path so execution history remains visible in the DAGU web UI |
 
 ---
 
@@ -60,29 +33,34 @@ Remove only after compression is verified:
 ```
 .harness-workspace/
 ├── _archive/
-│   └── {task-name}/
-│       ├── artifacts.tar.gz      ← compressed intermediate files
-│       └── archived-at.txt       ← timestamp of archive operation
-├── {task-name}/                   ← original directory (kept files remain)
-│   ├── SPEC.md
-│   ├── RETRO.md
-│   ├── progress.md
-│   ├── EVAL_CRITERIA.md
-│   ├── README.md
-│   ├── state.json
-│   └── eval-reports/
-│       └── eval-v{final}.md      ← only the final report remains
+│   └── {task-name}/               ← entire task, moved here intact
+│       ├── SPEC.md
+│       ├── RETRO.md               (may be absent in standalone archive)
+│       ├── progress.md
+│       ├── EVAL_CRITERIA.md
+│       ├── README.md
+│       ├── state.json
+│       ├── dag.yaml
+│       ├── harness.sh
+│       ├── eval-reports/          ← all reports preserved
+│       ├── changelogs/
+│       ├── prompts/
+│       └── archived-at.txt        ← timestamp of archive operation
+├── {active-task}/                  ← only active tasks remain here
+```
+
+DAGU symlink after archive:
+```
+~/.dagu/dags/harness-{task-name}.yaml → .harness-workspace/_archive/{task-name}/dag.yaml
 ```
 
 ---
 
 ## Archive Procedure
 
-1. Verify RETRO.md exists in the task directory
-2. Create `_archive/{task-name}/` directory
-3. Run `tar -czf _archive/{task-name}/artifacts.tar.gz` on compressible files
-4. Write `archived-at.txt` with ISO 8601 timestamp
-5. Verify tarball is valid: `tar -tzf artifacts.tar.gz > /dev/null`
-6. Remove compressed source files (only after step 5 succeeds)
-7. Run `bash harness.sh --unregister-dagu` if harness.sh exists
-8. Report summary: files kept, files compressed, bytes saved
+1. Check for RETRO.md in the task directory. If missing: warn and allow (standalone archive path) or abort (full retro path — should not happen since Phase 3 creates it)
+2. Clear stale lock fields (`running_step`, `pid`) in state.json
+3. Move `.harness-workspace/{task-name}/` → `.harness-workspace/_archive/{task-name}/`
+4. Write `archived-at.txt` with ISO 8601 timestamp inside the archived directory
+5. Update DAGU symlink: re-point `~/.dagu/dags/harness-{task-name}.yaml` → `_archive/{task-name}/dag.yaml` (if symlink existed)
+6. Report summary: task name, file count, new location

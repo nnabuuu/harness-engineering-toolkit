@@ -10,7 +10,7 @@
 - `/harness-create` — End-to-end: interview → spec → runnable harness project. Two entry points: start from scratch or from existing HARNESS_SPEC.md.
 
 ### Reflect
-- `/harness-retro` — Retrospective on completed harness tasks. Analyzes convergence, bottlenecks, cost. Suggests improvements. Optionally archives.
+- `/harness-retro` — Retrospective on completed harness tasks. Analyzes convergence, bottlenecks, cost. Suggests improvements. Optionally archives. Also supports standalone archive — skip analysis, go straight to workspace cleanup.
 
 ## Skill Routing
 
@@ -19,6 +19,7 @@ When the user's request matches an available skill, invoke it:
 - "audit", "scan my project", "审计", "扫描" → `/harness-audit`
 - "plan harness", "build harness", "create harness", "harness", "define spec", "generate loop", "设计harness", "构建harness", "定义验收条件", "生成迭代脚本" → `/harness-create`
 - "retro", "retrospective", "review harness", "analyze harness", "复盘", "回顾", "总结harness" → `/harness-retro`
+- "archive harness", "archive task", "clean up workspace", "归档harness", "归档" → `/harness-retro`
 
 ## Shared References
 

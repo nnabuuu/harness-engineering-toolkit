@@ -1,7 +1,7 @@
 ---
 name: harness-retro
-version: 1.0.0
-description: "Retrospective on completed harness tasks. Analyzes run data (scores, eval reports, changelogs) to identify convergence issues, bottleneck dimensions, repeated work, and cost inefficiency. Generates concrete prompt/rubric improvements. Optionally archives completed tasks. Triggers: 'retro', 'retrospective', 'review harness', 'analyze harness', '复盘', '回顾', '总结harness'."
+version: 1.1.0
+description: "Retrospective on completed harness tasks. Analyzes run data (scores, eval reports, changelogs) to identify convergence issues, bottleneck dimensions, repeated work, and cost inefficiency. Generates concrete prompt/rubric improvements. Optionally archives completed tasks. Standalone archive mode available — skip analysis, go straight to workspace cleanup. Triggers: 'retro', 'retrospective', 'review harness', 'analyze harness', '复盘', '回顾', '总结harness', 'archive harness', 'archive task', 'clean up workspace', '归档harness', '归档'."
 ---
 
 # Harness Retrospective
@@ -27,10 +27,27 @@ Analyze completed harness runs to extract patterns and generate concrete improve
 - [ ] Report saved to RETRO.md in the task directory (single-task) or `.harness-workspace/RETRO-{date}.md` (multi-task)
 
 ### Archive Guards
-- [ ] Archive only after retro report is complete
+- [ ] Archive only after retro report is complete (Entry A) OR after user acknowledges no RETRO.md (Entry B)
 - [ ] User explicitly confirmed before any file operations
-- [ ] DAGU symlink removed if it existed
-- [ ] Tarball verified before removing source files
+- [ ] Entire task directory moved to `_archive/`, not left split across two locations
+- [ ] DAGU symlink updated to point to new `_archive/` path (execution history preserved)
+
+---
+
+## Entry Point Detection
+
+Determine which entry point the user needs before starting any phase.
+
+- **Entry A — Full Retro**: Phases 1 → 2 → 3 → 4 (archive optional at end). The complete retrospective flow.
+- **Entry B — Standalone Archive**: Skip directly to Phase 4A. Archive completed/failed tasks without running analysis.
+
+### Detection Rules
+
+| User says | Entry |
+|-----------|-------|
+| "archive harness", "archive task", "clean up workspace", "归档harness", "归档" | **Entry B** |
+| "retro", "retrospective", "review harness", "analyze harness", "复盘", "回顾", "总结harness" | **Entry A** |
+| Unclear or ambiguous | Ask: "Do you want a full retrospective (analysis + improvements), or just archive completed tasks?" |
 
 ---
 
@@ -182,7 +199,7 @@ Re-read the Self-Review Checklist at the top of this file. Verify every applicab
 ### Step 4.1: Offer Archive
 
 After the retro report is complete, ask:
-> "Would you like to archive the completed task(s)? This compresses intermediate artifacts while keeping SPEC.md, RETRO.md, progress.md, and the final eval report in place."
+> "Would you like to archive the completed task(s)? This moves the task directory to `_archive/` and updates the DAGU symlink so execution history stays visible."
 
 Only proceed if the user confirms.
 
@@ -191,18 +208,84 @@ Only proceed if the user confirms.
 Read `references/archive-policy.md` for the detailed policy.
 
 For each task to archive:
-1. Verify RETRO.md exists (do not archive without a retro)
-2. Create `.harness-workspace/_archive/{task-name}/`
-3. Compress intermediate files into `artifacts.tar.gz`
+1. Verify RETRO.md exists (it will always be present — Phase 3 just created it)
+2. Clear stale lock fields in state.json
+3. Move `.harness-workspace/{task-name}/` → `.harness-workspace/_archive/{task-name}/`
 4. Write `archived-at.txt` with current timestamp
-5. Verify tarball integrity
-6. Remove compressed source files (only after verification)
-7. Run `bash harness.sh --unregister-dagu` if applicable
-8. Report: files kept, files compressed, bytes saved
+5. Update DAGU symlink to point to new `_archive/{task-name}/dag.yaml` path (if symlink existed)
 
 ### Step 4.3: Confirm
 
-Show the user what was archived and what remains accessible.
+Show the user what was archived. The task directory is now under `_archive/` and DAGU execution history remains accessible.
+
+---
+
+## Phase 4A: Standalone Archive (Entry B)
+
+This phase runs when the user enters via Entry B — they want to archive without running a full retro.
+
+### Step 4A.1: Scan Workspace
+
+Scan `.harness-workspace/` for all task directories (reuse Phase 1 scanning logic). For each directory, extract:
+
+- Task name (directory name)
+- Status (from `state.json` → `status` field, or infer from progress.md)
+- Whether `RETRO.md` exists
+- Iteration count (from `state.json` → `current_iteration`, or count eval reports)
+- Final score (from progress.md last entry, or last eval report)
+
+If `.harness-workspace/` doesn't exist or is empty, inform the user:
+> "No harness workspace found. Run `/harness-create` to create a harness first."
+
+### Step 4A.2: Present Archivable Tasks
+
+Show a table of tasks with status `completed` or `failed` only — these are archivable:
+
+```
+| # | Task | Status | Iterations | Final Score | RETRO.md |
+|---|------|--------|-----------|-------------|----------|
+| 1 | api-docs | completed | 8 | 82/100 | Yes |
+| 2 | auth-refactor | completed | 12 | 71/100 | No ⚠️ |
+| 3 | perf-bug | failed | 5 | — | No ⚠️ |
+```
+
+- Tasks **without RETRO.md** get a ⚠️ warning
+- For each flagged task, show: "⚠️ No RETRO.md — running `/harness-retro` first would capture learnings before archiving. Proceed anyway?"
+- Recommend retro but **do not block** — let the user decide
+
+If no tasks are archivable (all `in_progress` or `pending`), inform the user:
+> "No completed or failed tasks found to archive."
+
+### Step 4A.3: Confirm Archive
+
+Ask the user to select which tasks to archive from the table. For each selected task, show what will happen:
+
+- **Entire task directory** moved to `_archive/{task-name}/` — all files preserved intact
+- **DAGU symlink** updated to point to new path — execution history stays visible
+- **Original location** cleared from workspace
+
+Only proceed after the user confirms.
+
+### Step 4A.4: Execute Archive
+
+Read `references/archive-policy.md` for the detailed policy, then for each confirmed task:
+
+1. Check for RETRO.md — if missing, warn (standalone path allows this); if present, keep
+2. Clear stale lock fields in state.json
+3. Move `.harness-workspace/{task-name}/` → `.harness-workspace/_archive/{task-name}/`
+4. Write `archived-at.txt` with current timestamp
+5. Update DAGU symlink to point to new `_archive/{task-name}/dag.yaml` path (if symlink existed)
+
+### Step 4A.5: Summary
+
+Show a summary table of archived tasks:
+
+```
+| Task | Files | New Location | DAGU History |
+|------|-------|-------------|--------------|
+| api-docs | 21 | _archive/api-docs/ | Preserved |
+| auth-refactor | 34 | _archive/auth-refactor/ | Preserved |
+```
 
 ---
 
@@ -237,3 +320,4 @@ The retro skill is L4 — the evaluation loop applied to the harness system:
 | 2 | `references/analysis-playbook.md` | Starting analysis on any dimension |
 | 3.1 | `references/retro-report-template.md` | Generating RETRO.md |
 | 4.2 | `references/archive-policy.md` | User confirms archive |
+| 4A.4 | `references/archive-policy.md` | User confirms standalone archive |
