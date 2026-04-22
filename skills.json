@@ -1,6 +1,6 @@
 {
   "name": "harness-engineering-toolkit",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Diagnose and fix the harness around your AI agent — the system that decides whether it succeeds or fails.",
   "author": "nnabuuu",
   "license": "MIT",
