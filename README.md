@@ -31,6 +31,12 @@ Built on the **4-Layer Harness Model**:
 |-------|-------------|----------|
 | **`/harness-retro`** | Retrospective on completed harness tasks. Analyzes run data (scores, eval reports, changelogs) across 6 dimensions: convergence, bottleneck dimensions, repeated work, cost efficiency, prompt quality, and cross-task patterns. Generates concrete prompt/rubric improvements. Two entry points: full retro (analysis → improvements → optional archive) or standalone archive (skip analysis, move completed tasks to `_archive/` with DAGU history preserved). | Anyone who has run a harness |
 
+### Maintain
+
+| Skill | What it does | For whom |
+|-------|-------------|----------|
+| **`/harness-skill-prune`** | Audit installed skills after a model/platform upgrade. Classifies what each skill compensates for (model gap, harness gap, private knowledge, enforcement), then retires, trims, or keeps it. Report first, apply only on confirmation. Retired skills move to a `graveyard/` with an epitaph; every action is reversible. | Anyone with an aging skill inventory |
+
 ---
 
 ## The Five Blind Spots

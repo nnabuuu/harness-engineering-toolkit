@@ -12,6 +12,9 @@
 ### Reflect
 - `/harness-retro` — Retrospective on completed harness tasks. Analyzes convergence, bottlenecks, cost. Suggests improvements. Optionally archives. Also supports standalone archive — skip analysis, go straight to workspace cleanup.
 
+### Maintain
+- `/harness-skill-prune` — Audit installed skills after a model/platform upgrade. Retire, trim, or keep each one. Retired skills move to a graveyard with an epitaph; every action is reversible.
+
 ## Skill Routing
 
 When the user's request matches an available skill, invoke it:
@@ -20,6 +23,7 @@ When the user's request matches an available skill, invoke it:
 - "plan harness", "build harness", "create harness", "harness", "define spec", "generate loop", "设计harness", "构建harness", "定义验收条件", "生成迭代脚本" → `/harness-create`
 - "retro", "retrospective", "review harness", "analyze harness", "复盘", "回顾", "总结harness" → `/harness-retro`
 - "archive harness", "archive task", "clean up workspace", "归档harness", "归档" → `/harness-retro`
+- "prune skills", "clean up skills", "skill audit", "which skills are obsolete", "restore skill", "清理skill", "精简skill", "淘汰skill", "技能清理" → `/harness-skill-prune`
 
 ## Shared References
 
